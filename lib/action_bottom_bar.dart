@@ -1,6 +1,6 @@
 library navigation_action_bar;
 
-import 'package:flutter/material.dart';
+import 'package:common_ui_toolkit/common_ui_toolkit.dart';
 
 import 'src/item.dart';
 import 'src/painter.dart';
@@ -10,6 +10,9 @@ class NavigationActionBar extends StatefulWidget {
     required this.items,
     required this.mainIndex,
     required this.subItems,
+    this.overLayColor = Colors.white,
+    this.overLayColorOpacity = 0.5,
+    this.onPressOverLay,
     this.index = 0,
     this.accentColor = Colors.redAccent,
     this.backgroundColor = Colors.white,
@@ -19,6 +22,8 @@ class NavigationActionBar extends StatefulWidget {
     this.context,
     this.subItemSpacing = 150,
     this.animationCurve = Curves.bounceOut,
+    this.rowSubItemDirection = false,
+    this.columItemsSpaceBetween = 80,
     Key? key,
   })  : assert(context != null, 'context is required'),
         assert(items.isNotEmpty, 'items is required'),
@@ -38,6 +43,11 @@ class NavigationActionBar extends StatefulWidget {
   final Curve animationCurve;
   final ValueChanged<double>? onTap;
   final List<NavBarItem> subItems;
+  final Color overLayColor;
+  final double overLayColorOpacity;
+  final double columItemsSpaceBetween;
+  final Function()? onPressOverLay;
+  final bool rowSubItemDirection;
 
   @override
   NavigationActionBarState createState() => NavigationActionBarState();
@@ -45,7 +55,7 @@ class NavigationActionBar extends StatefulWidget {
 
 class NavigationActionBarState extends State<NavigationActionBar>
     with SingleTickerProviderStateMixin {
-  double height = 70;
+  double height = 80;
   int? selectedIndex;
   AnimationController? controller;
   Animation<double>? translation;
@@ -53,6 +63,7 @@ class NavigationActionBarState extends State<NavigationActionBar>
   int? length;
   OverlayEntry? _overlayEntry;
   bool _overlayTrue = false;
+  OverlayState? overlayState;
 
 //  double splitAngle;
 
@@ -63,6 +74,7 @@ class NavigationActionBarState extends State<NavigationActionBar>
 
     length = widget.items.length;
     position = widget.mainIndex / length!;
+    overlayState = Overlay.of(context);
 
 //    if (widget.subItems != null) {
 //      splitAngle = 180 / (widget.subItems.length! + 1);
@@ -99,36 +111,79 @@ class NavigationActionBarState extends State<NavigationActionBar>
         child: Center(
           child: Stack(
             alignment: Alignment.center,
-            children: widget.subItems.reversed.map((NavBarItem item) {
-              final int index = widget.subItems.indexOf(item);
-              return Positioned(
-                bottom: 100,
-                left: 0 +
-                    ((index > mid) ? (index - mid) * widget.subItemSpacing : 0)
-                        .toDouble(),
-                right: 0 +
-                    ((index < mid) ? (mid - index) * widget.subItemSpacing : 0)
-                        .toDouble(),
-                child: ScaleTransition(
-                  scale: CurvedAnimation(
+            children: <Widget>[
+              Positioned(
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                child: FadeTransition(
+                  opacity: CurvedAnimation(
                     parent: controller!,
-                    curve: Interval(
-                      0 + ((1 / length!) * (index)),
-                      1.0 - index / widget.subItems.length / 4,
-                      curve: Curves.easeInCubic,
-                    ),
+                    curve: Curves.slowMiddle,
                   ),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
+                  child: ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: controller!,
+                      curve: const Interval(
+                        1,
+                        1,
+                        curve: Curves.easeInToLinear,
+                      ),
+                    ),
+                    child: CommonContainer(
+                      onPress: () {
                         _overlayTrue = false;
                         controller!.reverse();
-                      });
-                    },
+                        widget.onPressOverLay?.call();
+                      },
+                      style: CommonContainerModel(
+                        height: 1,
+                        width: 1,
+                        backgroundColor: (widget.overLayColor)
+                            .withOpacity(widget.overLayColorOpacity),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ...widget.subItems.reversed.map((NavBarItem item) {
+                final int index = widget.subItems.indexOf(item);
+                return Positioned(
+                  bottom: widget.rowSubItemDirection
+                      ? 100
+                      : 100 + (index * widget.columItemsSpaceBetween),
+                  left: widget.rowSubItemDirection
+                      ? (0 +
+                          ((index > mid)
+                                  ? (index - mid) * widget.subItemSpacing
+                                  : 0)
+                              .toDouble())
+                      : 0,
+                  right: widget.rowSubItemDirection
+                      ? (0 +
+                          ((index < mid)
+                                  ? (mid - index) * widget.subItemSpacing
+                                  : 0)
+                              .toDouble())
+                      : 0,
+                  child: ScaleTransition(
+                    scale: CurvedAnimation(
+                      parent: controller!,
+                      curve: Interval(
+                        0 + ((1 / length!) * (index)),
+                        1.0 - index / widget.subItems.length / 4,
+                        curve: Curves.easeInCubic,
+                      ),
+                    ),
                     child: ActionBarItem(
                       onTap: (double value) {
                         item.onPress?.call(value);
                         _buttonTap(value);
+                        setState(() {
+                          _overlayTrue = false;
+                          controller!.reverse();
+                        });
                       },
                       iconData: item.iconData,
                       iconWidget: item.iconWidget,
@@ -137,14 +192,14 @@ class NavigationActionBarState extends State<NavigationActionBar>
                       index: index,
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList()
+            ],
           ),
         ),
       );
     });
-    Overlay.of(context)!.insert(_overlayEntry!);
+    overlayState!.insert(_overlayEntry!);
   }
 
   @override
@@ -223,7 +278,6 @@ class NavigationActionBarState extends State<NavigationActionBar>
       });
       _handleOverlay(index);
     }
-    print(index);
   }
 
   void _handleOverlay(double index) {
@@ -242,13 +296,13 @@ class NavigationActionBarState extends State<NavigationActionBar>
 
   void _removeOverlay() {
     controller!.reverse();
-    Future<void>.delayed(widget.animationDuration)
-        .then((dynamic value) => _overlayEntry!.remove());
     _overlayTrue = !_overlayTrue;
   }
 
   void _addOverlay() {
-    _insertOverlay(widget.context!);
+    if (_overlayEntry == null) {
+      _insertOverlay(widget.context!);
+    }
     controller!.forward();
     _overlayTrue = !_overlayTrue;
   }

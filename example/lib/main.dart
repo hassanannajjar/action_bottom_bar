@@ -81,7 +81,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
             size: 30,
           ),
         ],
+        onPressOverLay: () => _handelClose(0),
         mainIndex: 2,
+        rowSubItemDirection: false,
+        columItemsSpaceBetween: 60,
         // accentColor: Colors.blue,
         items: <NavBarItem>[
           NavBarItem(

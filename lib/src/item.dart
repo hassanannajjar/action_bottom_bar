@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:common_ui_toolkit/common_ui_toolkit.dart';
 
 class BarItem extends StatelessWidget {
   const BarItem({
@@ -142,31 +142,23 @@ class ActionBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
+    return CommonContainer(
+      onPress: () {
+        final String str = '$mainIndex.$index';
+        onTap!(double.parse(str));
+      },
+      style: CommonContainerModel(
+        backgroundColor: Colors.white,
+        boxShape: BoxShape.circle,
+        alignment: Alignment.bottomCenter,
+        padding: 0.01,
       ),
-      alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.all(10),
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          final String str = '$mainIndex.$index';
-          onTap!(double.parse(str));
-        },
-        child: Container(
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-          ),
-          child: iconData != null
-              ? Icon(
-                  iconData,
-                  size: size,
-                )
-              : iconWidget!,
-        ),
-      ),
+      child: iconData != null
+          ? Icon(
+              iconData,
+              size: size,
+            )
+          : iconWidget!,
     );
   }
 }

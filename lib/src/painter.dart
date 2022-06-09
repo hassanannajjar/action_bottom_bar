@@ -20,21 +20,21 @@ class Painter extends CustomPainter {
 
     final Path path = Path()
       ..moveTo(0, 0)
-      ..lineTo((startingPosition! - 0.1) * size.width, 0)
+      ..lineTo((startingPosition! - 0.08) * size.width, 0)
       ..cubicTo(
-        (startingPosition! + offset! * 0.20) * size.width,
+        (startingPosition! + offset! * 0.4) * size.width,
         size.height * 0.05,
         startingPosition! * size.width,
-        size.height * 0.70,
+        size.height * 0.55,
         (startingPosition! + offset! * 0.50) * size.width,
-        size.height * 0.70,
+        size.height * 0.55,
       )
       ..cubicTo(
         (startingPosition! + offset!) * size.width,
-        size.height * 0.70,
-        (startingPosition! + offset! - offset! * 0.20) * size.width,
+        size.height * 0.55,
+        (startingPosition! + offset! - offset! * 0.4) * size.width,
         size.height * 0.05,
-        (startingPosition! + offset! + 0.1) * size.width,
+        (startingPosition! + offset! + 0.08) * size.width,
         0,
       )
       ..lineTo(size.width, 0)
