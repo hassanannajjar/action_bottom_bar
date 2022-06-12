@@ -22,8 +22,8 @@ class Painter extends CustomPainter {
       ..moveTo(0, 0)
       ..lineTo((startingPosition! - 0.08) * size.width, 0)
       ..cubicTo(
-        (startingPosition! + offset! * 0.4) * size.width,
-        size.height * 0.05,
+        (startingPosition! + offset! * 0.25) * size.width,
+        size.height * 0.06,
         startingPosition! * size.width,
         size.height * 0.55,
         (startingPosition! + offset! * 0.50) * size.width,
@@ -32,8 +32,8 @@ class Painter extends CustomPainter {
       ..cubicTo(
         (startingPosition! + offset!) * size.width,
         size.height * 0.55,
-        (startingPosition! + offset! - offset! * 0.4) * size.width,
-        size.height * 0.05,
+        (startingPosition! + offset! - offset! * 0.25) * size.width,
+        size.height * 0.06,
         (startingPosition! + offset! + 0.08) * size.width,
         0,
       )

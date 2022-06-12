@@ -15,35 +15,24 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   double currentIndex = 0;
   Color unSelectedColor = Colors.grey;
   Color selectedColor = Colors.black;
-  AnimationController? _animationController;
-  bool isPlaying = false;
+  double _iconIndex = 0;
 
   @override
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(
-        milliseconds: 300,
-      ),
-    );
   }
 
   void _handleOnPressed(value) {
     setState(() {
-      isPlaying = !isPlaying;
-      isPlaying
-          ? _animationController!.forward()
-          : _animationController!.reverse();
+      _iconIndex = _iconIndex == 0 ? 1 : 0;
     });
   }
 
   void _handelClose(value) {
-    if (isPlaying) {
+    if (_iconIndex == 1) {
       setState(() {
-        isPlaying = !isPlaying;
-        _animationController!.reverse();
+        _iconIndex = 0;
       });
     }
   }
@@ -65,6 +54,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.yellow,
       bottomNavigationBar: NavigationActionBar(
         context: context,
         animationCurve: Curves.decelerate,
@@ -72,50 +62,93 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
         subItems: <NavBarItem>[
           NavBarItem(
             onPress: _handelClose,
-            iconData: Icons.abc_outlined,
+            iconWidget: const OverlayItem(
+              title: 'New job',
+            ),
+            containerStyle: CommonContainerModel(
+              backgroundColor: Colors.white,
+              alignment: Alignment.bottomCenter,
+              paddingVertical: 0.01,
+              marginHorizontal: 0.35,
+              borderRadius: 0.1,
+            ),
             size: 30,
           ),
           NavBarItem(
             onPress: _handelClose,
-            iconData: Icons.one_x_mobiledata,
+            iconWidget: const OverlayItem(
+              title: 'New Quote',
+              icon: Icons.create_new_folder_outlined,
+            ),
+            containerStyle: CommonContainerModel(
+              backgroundColor: Colors.white,
+              alignment: Alignment.bottomCenter,
+              paddingVertical: 0.01,
+              marginHorizontal: 0.35,
+              borderRadius: 0.1,
+            ),
             size: 30,
           ),
         ],
         onPressOverLay: () => _handelClose(0),
         mainIndex: 2,
+        overLayColorOpacity: 0.5,
         rowSubItemDirection: false,
-        columItemsSpaceBetween: 60,
-        // accentColor: Colors.blue,
+        columItemsSpaceBetween: DEVICE_HEIGHT * 0.07,
+        overlayMarginBottom: DEVICE_HEIGHT * 0.12,
+        accentColor: Colors.blue,
+        height: DEVICE_HEIGHT * 0.1,
+        scaffoldColor: Colors.transparent,
         items: <NavBarItem>[
           NavBarItem(
             iconData: Icons.home,
             onPress: _handelClose,
             size: 30,
+            selectedColor: Colors.blue,
           ),
           NavBarItem(
             iconData: Icons.safety_check,
             size: 30,
             onPress: _handelClose,
+            selectedColor: Colors.blue,
           ),
           NavBarItem(
-            iconWidget: AnimatedIcon(
-              icon: AnimatedIcons.menu_close,
-              size: 30,
-              progress: _animationController!,
-              semanticLabel: 'Show menu',
+            iconWidget: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              transitionBuilder: (child, anim) => RotationTransition(
+                turns: child.key == const ValueKey('icon1')
+                    ? Tween<double>(begin: 1, end: 0.75).animate(anim)
+                    : Tween<double>(begin: 0.75, end: 1).animate(anim),
+                child: ScaleTransition(scale: anim, child: child),
+              ),
+              child: _iconIndex == 0
+                  ? const Icon(
+                      Icons.add,
+                      key: ValueKey('icon1'),
+                      color: Colors.white,
+                      size: 30,
+                    )
+                  : const Icon(
+                      Icons.close,
+                      key: ValueKey('icon2'),
+                      color: Colors.white,
+                      size: 30,
+                    ),
             ),
             onPress: _handleOnPressed,
-            size: 40,
+            size: 50,
           ),
           NavBarItem(
             iconData: Icons.person,
             size: 30,
             onPress: _handelClose,
+            selectedColor: Colors.blue,
           ),
           NavBarItem(
             iconData: Icons.menu,
             size: 30,
             onPress: _handelClose,
+            selectedColor: Colors.blue,
           ),
         ],
         onTap: (double index) {
@@ -127,8 +160,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           }
         },
       ),
-      body: Container(
-        color: Colors.blueAccent,
+      body: SizedBox(
+        // color: Colors.blueAccent,
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Center(
@@ -145,6 +178,27 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class OverlayItem extends StatelessWidget {
+  const OverlayItem({
+    Key? key,
+    this.title = '',
+    this.icon,
+  }) : super(key: key);
+
+  final String? title;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonText(
+      text: '  $title',
+      leftChild: Icon(
+        icon ?? Icons.work,
       ),
     );
   }

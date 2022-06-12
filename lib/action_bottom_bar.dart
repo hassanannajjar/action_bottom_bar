@@ -24,6 +24,8 @@ class NavigationActionBar extends StatefulWidget {
     this.animationCurve = Curves.bounceOut,
     this.rowSubItemDirection = false,
     this.columItemsSpaceBetween = 80,
+    this.overlayMarginBottom = 100,
+    this.height = 80,
     Key? key,
   })  : assert(context != null, 'context is required'),
         assert(items.isNotEmpty, 'items is required'),
@@ -48,6 +50,8 @@ class NavigationActionBar extends StatefulWidget {
   final double columItemsSpaceBetween;
   final Function()? onPressOverLay;
   final bool rowSubItemDirection;
+  final double height;
+  final double overlayMarginBottom;
 
   @override
   NavigationActionBarState createState() => NavigationActionBarState();
@@ -55,7 +59,6 @@ class NavigationActionBar extends StatefulWidget {
 
 class NavigationActionBarState extends State<NavigationActionBar>
     with SingleTickerProviderStateMixin {
-  double height = 80;
   int? selectedIndex;
   AnimationController? controller;
   Animation<double>? translation;
@@ -151,8 +154,9 @@ class NavigationActionBarState extends State<NavigationActionBar>
                 final int index = widget.subItems.indexOf(item);
                 return Positioned(
                   bottom: widget.rowSubItemDirection
-                      ? 100
-                      : 100 + (index * widget.columItemsSpaceBetween),
+                      ? (widget.overlayMarginBottom)
+                      : (widget.overlayMarginBottom) +
+                          (index * widget.columItemsSpaceBetween),
                   left: widget.rowSubItemDirection
                       ? (0 +
                           ((index > mid)
@@ -188,6 +192,7 @@ class NavigationActionBarState extends State<NavigationActionBar>
                       iconData: item.iconData,
                       iconWidget: item.iconWidget,
                       size: item.size!,
+                      containerStyle: item.containerStyle,
                       mainIndex: widget.mainIndex,
                       index: index,
                     ),
@@ -205,13 +210,14 @@ class NavigationActionBarState extends State<NavigationActionBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: widget.height,
       decoration: BoxDecoration(
         color: widget.scaffoldColor,
         border: Border.all(width: 0, color: widget.scaffoldColor),
       ),
       child: Stack(
         children: <Widget>[
+          // background bottom paint
           Positioned(
             left: 0,
             right: 0,
@@ -224,12 +230,14 @@ class NavigationActionBarState extends State<NavigationActionBar>
                 Directionality.of(context),
               ),
               child: Container(
-                height: height,
+                height: (widget.height) - 10,
               ),
             ),
           ),
+
+          // items
           SizedBox(
-            height: height,
+            height: widget.height,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: widget.items.map((NavBarItem item) {
@@ -316,6 +324,7 @@ class NavBarItem {
     this.selectedColor = Colors.redAccent,
     this.unselectedColor = Colors.black,
     this.onPress,
+    this.containerStyle,
   });
   final IconData? iconData;
   final Widget? iconWidget;
@@ -323,4 +332,5 @@ class NavBarItem {
   final Color selectedColor;
   final Color unselectedColor;
   final Function(double)? onPress;
+  final CommonContainerModel? containerStyle;
 }

@@ -131,6 +131,7 @@ class ActionBarItem extends StatelessWidget {
     this.iconData,
     this.iconWidget,
     this.size,
+    this.containerStyle,
   }) : super(key: key);
 
   final int? index;
@@ -139,6 +140,7 @@ class ActionBarItem extends StatelessWidget {
   final IconData? iconData;
   final double? size;
   final Widget? iconWidget;
+  final CommonContainerModel? containerStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -147,12 +149,13 @@ class ActionBarItem extends StatelessWidget {
         final String str = '$mainIndex.$index';
         onTap!(double.parse(str));
       },
-      style: CommonContainerModel(
-        backgroundColor: Colors.white,
-        boxShape: BoxShape.circle,
-        alignment: Alignment.bottomCenter,
-        padding: 0.01,
-      ),
+      style: containerStyle ??
+          CommonContainerModel(
+            backgroundColor: Colors.white,
+            boxShape: BoxShape.circle,
+            alignment: Alignment.bottomCenter,
+            padding: 0.01,
+          ),
       child: iconData != null
           ? Icon(
               iconData,
