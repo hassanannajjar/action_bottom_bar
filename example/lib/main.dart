@@ -105,6 +105,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
             onPress: _handelClose,
             size: 30,
             selectedColor: Colors.blue,
+            text: 'Home',
           ),
           NavBarItem(
             iconData: Icons.safety_check,

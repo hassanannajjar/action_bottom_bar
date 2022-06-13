@@ -258,10 +258,14 @@ class NavigationActionBarState extends State<NavigationActionBar>
                 } else {
                   return BarItem(
                     index: index,
+                    totalItems: widget.items.length,
                     onTap: (double value) {
                       item.onPress?.call(value);
                       _buttonTap(value);
                     },
+                    containerModelStyle: item.containerModelStyle,
+                    text: item.text,
+                    textModelStyle: item.textModelStyle,
                     iconData: item.iconData,
                     iconWidget: item.iconWidget,
                     size: item.size!,
@@ -325,6 +329,9 @@ class NavBarItem {
     this.unselectedColor = Colors.black,
     this.onPress,
     this.containerStyle,
+    this.containerModelStyle,
+    this.text,
+    this.textModelStyle,
   });
   final IconData? iconData;
   final Widget? iconWidget;
@@ -333,4 +340,7 @@ class NavBarItem {
   final Color unselectedColor;
   final Function(double)? onPress;
   final CommonContainerModel? containerStyle;
+  final CommonContainerModel? containerModelStyle;
+  final String? text;
+  final CommonTextModel? textModelStyle;
 }

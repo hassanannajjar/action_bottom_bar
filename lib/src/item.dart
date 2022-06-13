@@ -11,25 +11,48 @@ class BarItem extends StatelessWidget {
     this.selected,
     this.unselected,
     this.currentIndex,
+    this.totalItems,
+    this.containerModelStyle,
+    this.text,
+    this.textModelStyle,
   }) : super(key: key);
   final int? index;
   final int? currentIndex;
   final ValueChanged<double>? onTap;
   final IconData? iconData;
   final double? size;
+  final int? totalItems;
   final Color? selected;
   final Widget? iconWidget;
   final Color? unselected;
+  final CommonContainerModel? containerModelStyle;
+  final String? text;
+  final CommonTextModel? textModelStyle;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () {
+    return CommonContainer(
+      onPress: () {
         onTap!(index!.toDouble());
       },
-      child: Container(
-        child: iconData != null
+      style: containerModelStyle ??
+          CommonContainerModel(
+            // backgroundColor: Colors.red,
+            touchEffect: TouchableEffect(
+              type: TouchTypes.scaleAndUp,
+              lowerBound: 0.9,
+            ),
+            width: (totalItems! / size!),
+            paddingTop: 0.01,
+            // width:
+          ),
+      child: CommonText(
+        text: text ?? '',
+        style: textModelStyle ??
+            CommonTextModel(
+              fontColor: (currentIndex == index) ? selected : unselected,
+            ),
+        topChild: iconData != null
             ? Icon(
                 iconData,
                 size: size,
