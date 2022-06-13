@@ -239,7 +239,7 @@ class NavigationActionBarState extends State<NavigationActionBar>
           SizedBox(
             height: widget.height,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: widget.items.map((NavBarItem item) {
                 final int index = widget.items.indexOf(item);
                 if (index == widget.mainIndex) {
